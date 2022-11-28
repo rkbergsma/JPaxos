@@ -68,7 +68,7 @@ public class Snapshot {
         g.add(clusters.get(adding));
 
         try {
-            Graphviz.fromGraph(g).height(709).render(Format.SVG).toFile(new File(outputDir + "/paxos" + snapshotNum + ".svg"));
+            Graphviz.fromGraph(g).height(709).render(Format.PNG).toFile(new File(outputDir + "/paxos" + snapshotNum + ".png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
