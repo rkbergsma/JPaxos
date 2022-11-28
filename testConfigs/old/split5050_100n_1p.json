@@ -1,0 +1,9 @@
+{
+  "weightType": "split5050",
+  "numberNodes": 100,
+  "proposalIntervalInMs": 0,
+  "messageDelayInMs": 0,
+  "proposals": [
+    {"node":8,"value":44}
+  ]
+}
