@@ -7,10 +7,26 @@ import messages.Message;
 import top.Node;
 import top.Promise;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static guru.nidi.graphviz.attribute.Records.rec;
 import static guru.nidi.graphviz.attribute.Records.turn;
 import static guru.nidi.graphviz.model.Factory.mutGraph;
 import static guru.nidi.graphviz.model.Factory.mutNode;
+import static javafx.application.Platform.exit;
 
 public class GraphNode {
     Node n;
@@ -49,10 +65,10 @@ public class GraphNode {
 
     private MutableNode image() {
         MutableNode image = mutNode(n.getMyId() + " image");
+
         if (n.getMyId().equals(0)) {
-            image.add(Image.of("garg.png"));
-        }
-        else {
+            image.add(Image.of("garg.PNG"));
+        } else {
             image.add(Image.of("vnice.jpg"));
         }
         image.add(Shape.RECTANGLE);

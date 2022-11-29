@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Orchestrator {
     private static CommandLine cmd;
-    private static Snapshot snapshot = new Snapshot("./graphs/");
+    private static Snapshot snapshot = new Snapshot("snapshots/");
 
     public static void main (String[] args) {
         parseCommandLineArgs(args);
