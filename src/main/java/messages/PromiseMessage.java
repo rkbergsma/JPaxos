@@ -21,7 +21,7 @@ public class PromiseMessage implements Message{
 
     @Override
     public String getMessageType() {
-        return "top.Promise";
+        return "Promise";
     }
 
     @Override
@@ -29,7 +29,10 @@ public class PromiseMessage implements Message{
         if (!promisedProposalNumber.equals(node.proposalNumber)){
             return;
         }
-        node.promises.add(promise);
+
+        if (promise.getPromiseId() != null && promise.getValue() != null) {
+            node.promises.add(promise);
+        }
         node.promiseWeightSum = node.promiseWeightSum + node.getWeight(senderId);
 //        if (node.promises.size() == (node.getPeers().size() + 1) / 2){   // this should be acceptors size, but we assume all peers are acceptors and graph it completely connected
         if (!node.promiseThresholdMet && Double.compare(node.promiseWeightSum, 0.5) > 0){

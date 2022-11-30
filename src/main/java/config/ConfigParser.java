@@ -21,6 +21,7 @@ public class ConfigParser {
             System.out.println("poisonAllAtOnce: " + paxosConfig.isPoisonAllAtOnce());
             System.out.println("poisonFrequency: " + paxosConfig.getpoisonRateInMs());
             System.out.println("poisonTime: " + paxosConfig.getnodeDownTimeInMs());
+            System.out.println("snapshotEnable: " + paxosConfig.isSnapshotEnable());
             return paxosConfig;
         } catch (FileNotFoundException e) {
             System.err.println("Could not find config file!");

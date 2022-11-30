@@ -77,6 +77,14 @@ public class Orchestrator {
                 .build();
         options.addOption(messageDelay);
 
+        Option snapshotEnable = Option.builder("s").longOpt("snapshotEnable")
+                .argName("snapshotEnable")
+                .hasArg()
+                .required(false)
+                .desc("Enable taking snapshots and drawing with graphviz")
+                .build();
+        options.addOption(snapshotEnable);
+
         return options;
     }
 
@@ -91,7 +99,7 @@ public class Orchestrator {
 
         Map<Integer, Queue<Message>> nodes = makeNodes(paxosConfig.getNumberNodes());
         List<Double> weights = Weight.getWeights(paxosConfig.getWeightType(), nodes.size());
-        startNodes(nodes, weights, Long.valueOf(paxosConfig.getMessageDelayInMs()));
+        startNodes(nodes, weights, Long.valueOf(paxosConfig.getMessageDelayInMs()), paxosConfig.isSnapshotEnable());
         snapshot.drawGraph();
         runTestFromConfig(paxosConfig, nodes);
     }
@@ -157,7 +165,7 @@ public class Orchestrator {
 //        }
         long totalElapsedTime = (System.nanoTime() - startTime)/1000;
         try {
-            Thread.sleep(7000);
+            Thread.sleep(30000);
         } catch (InterruptedException e) {
             System.err.println("Error sleeping at end!");
         }
@@ -169,7 +177,7 @@ public class Orchestrator {
         Integer numNodes = Integer.parseInt(cmd.getOptionValue("nodes", "10"));
         Map<Integer, Queue<Message>> nodes = makeNodes(numNodes);
         List<Double> weights = Weight.getWeights(Weight.WeightType.valueOf(cmd.getOptionValue("weightType", "exponential").toUpperCase()), nodes.size());
-        startNodes(nodes, weights, Long.parseLong(cmd.getOptionValue("messageDelay", "50")));
+        startNodes(nodes, weights, Long.parseLong(cmd.getOptionValue("messageDelay", "50")), cmd.hasOption("snapshotEnable"));
         snapshot.drawGraph();
         takeUserInput(nodes);
     }
@@ -203,7 +211,7 @@ public class Orchestrator {
         sc.close();
     }
 
-    private static void startNodes(Map<Integer, Queue<Message>> nodes, List<Double> weights, long sleepTime) {
+    private static void startNodes(Map<Integer, Queue<Message>> nodes, List<Double> weights, long sleepTime, boolean snapshotEnable) {
         for (Integer id : nodes.keySet()){
             Map<Integer, Queue<Message>> peerMapping = new HashMap<>();
             for (Integer peerId : nodes.keySet()){
@@ -211,7 +219,7 @@ public class Orchestrator {
                     peerMapping.put(peerId, nodes.get(peerId));
                 }
             }
-            Node node = new Node(id, nodes.get(id), peerMapping, weights, sleepTime);
+            Node node = new Node(id, nodes.get(id), peerMapping, weights, sleepTime, snapshotEnable);
             snapshot.addNode(node);
             node.start();
         }

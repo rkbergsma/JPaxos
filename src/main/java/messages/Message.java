@@ -12,4 +12,8 @@ public interface Message {
     default String printMessage(Integer receiverId) {
         return "Node " + receiverId + " received " + getMessageType() + " message from sender ID: " + getSender();
     }
+
+    default String messageSnapshot() {
+        return getMessageType() + " message from node " + getSender();
+    }
 }

@@ -1,6 +1,7 @@
 package messages;
 
 import top.Node;
+import top.Orchestrator;
 import top.Promise;
 
 import java.util.ArrayList;
@@ -31,11 +32,14 @@ public class PoisonPillMessage implements Message{
     public void process(Node node) {
         if (poisonedNode.equals(node.getMyId())) {
             try {
+                node.paused = true;
+                node.poisoned = true;
                 Thread.sleep(Long.valueOf(downTimeInMs));
             } catch (InterruptedException e) {
                 System.err.println("Error sleeping when taking the poison pill on node " + node.getMyId());
             }
             // clear all variables, including queue
+            node.poisoned = false;
             node.proposedValue = null;
             node.acceptedProposalNumber = null;
             node.promisedProposalNumber = null;
@@ -43,6 +47,7 @@ public class PoisonPillMessage implements Message{
             node.decidedValue = null;
             node.getMailbox().clear();
             node.readState();
+            node.paused = false;
         }
     }
 }

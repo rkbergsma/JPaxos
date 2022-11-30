@@ -39,10 +39,13 @@ public class Node extends Thread{
     // Learner State:
     public Integer decidedValue = null;
 
-    // Current message being processed for Graphviz
+    // Fields for graphviz snapshots
+    public boolean snapshotEnable = false;
+    public boolean paused = true;
+    public boolean poisoned = false;
     public Message currentMessage;
 
-    public Node (Integer myId, Queue<Message> mailbox, Map<Integer, Queue<Message>> peers, List<Double> weights, long sleepTime){
+    public Node (Integer myId, Queue<Message> mailbox, Map<Integer, Queue<Message>> peers, List<Double> weights, long sleepTime, boolean snapshotEnable){
         this.myId = myId;
         this.mailbox = mailbox;
         this.peers = peers;
@@ -50,6 +53,7 @@ public class Node extends Thread{
         this.proposalNumber = myId;
         this.weights = weights;
         this.sleepTime = sleepTime;
+        this.snapshotEnable = snapshotEnable;
         //this.myWeight = weights.get(myId);
     }
 
@@ -60,6 +64,17 @@ public class Node extends Thread{
             currentMessage = message;
             if (message != null){
                 processMessage(message);
+            } else {
+                if (snapshotEnable) {
+                    paused = true;
+                    while (paused) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
             }
         }
     }
@@ -71,8 +86,20 @@ public class Node extends Thread{
         } catch (InterruptedException e) {
             System.err.println(e.getMessage());
         }
+
         message.process(this);
-        Orchestrator.updateGraph();
+
+        if (snapshotEnable) {
+            paused = true;
+            Orchestrator.updateGraph();
+            while (paused) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     public void writeState(){
@@ -155,5 +182,13 @@ public class Node extends Thread{
 
     public Double getWeight(Integer nodeNumber) {
         return weights.get(nodeNumber);
+    }
+
+    public void unpause() {
+        this.paused = false;
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 }

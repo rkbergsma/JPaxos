@@ -29,6 +29,7 @@ public class Snapshot {
     File outputDir;
     List<GraphNode> nodes;
     int snapshotNum = 0;
+    boolean inProgress = false;
 
     public Snapshot(String outputDir) {
         this.outputDir = new File(outputDir);
@@ -57,11 +58,20 @@ public class Snapshot {
     }
 
     public void drawGraph() {
+        if (inProgress) {
+            return;
+        }
+
+        inProgress = true;
+        if (!allNodesReady()) {
+            return;
+        }
+
         snapshotNum++;
         MutableGraph g = mutGraph().setDirected(false);
         g.graphAttrs().add(Rank.dir(LEFT_TO_RIGHT));
         g.linkAttrs().add(Style.INVIS);
-        g.nodeAttrs().add(Font.name("Monospaced"));
+//        g.nodeAttrs().add(Font.name("Monospaced"));
 
         List<MutableGraph> clusters = new ArrayList<>();
         for (GraphNode n : nodes) {
@@ -84,10 +94,43 @@ public class Snapshot {
         int adding = lastAdded + rowLength;
         g.add(clusters.get(adding));
 
+        long startTime = System.currentTimeMillis();
         try {
             Graphviz.fromGraph(g).basedir(outputDir).height(2000).render(Format.PNG).toFile(new File(outputDir + "/paxos" + snapshotNum + ".png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        long endTime = System.currentTimeMillis();
+        long elapsed = endTime - startTime;
+        System.out.println("Drew snapshot " + snapshotNum + " in " + elapsed + "ms");
+
+        unpauseAll();
+        inProgress = false;
+    }
+
+    private boolean allNodesReady() {
+        int numReady = 0;
+        int numNodes = nodes.size();
+
+        boolean ready = false;
+        while (!ready) {
+            numReady = 0;
+            for (GraphNode n : nodes) {
+                if (n.isPaused()) {
+                    numReady++;
+                }
+            }
+            if (numReady == numNodes) {
+                ready = true;
+            }
+        }
+
+        return true;
+    }
+
+    private void unpauseAll() {
+        for (GraphNode n : nodes) {
+            n.unpause();
         }
     }
 

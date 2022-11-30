@@ -3,6 +3,7 @@
   "numberNodes": 6,
   "proposalIntervalInS": 0,
   "messageDelayInMs": 0,
+  "snapshotEnable": true,
   "proposals": [
     {"node":0, "value":44}
   ]

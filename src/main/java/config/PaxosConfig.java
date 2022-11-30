@@ -21,6 +21,9 @@ public class PaxosConfig {
     private Integer messageDelayInMs = 50;
     private List<Proposal> proposals = new ArrayList<>();
 
+    // Graphviz snapshots
+    private boolean snapshotEnable = false;
+
     public Weight.WeightType getWeightType() {
         return weightType;
     }
@@ -91,5 +94,13 @@ public class PaxosConfig {
 
     public void setPoisonAllAtOnce(boolean poisonAllAtOnce) {
         this.poisonAllAtOnce = poisonAllAtOnce;
+    }
+
+    public boolean isSnapshotEnable() {
+        return snapshotEnable;
+    }
+
+    public void setSnapshotEnable(boolean snapshotEnable) {
+        this.snapshotEnable = snapshotEnable;
     }
 }

@@ -29,18 +29,26 @@ import static guru.nidi.graphviz.model.Factory.mutNode;
 import static javafx.application.Platform.exit;
 
 public class GraphNode {
-    Node n;
+    private Node n;
 
     public GraphNode(Node n) {
         this.n = n;
     }
 
-    public String getId() {
-        return this.n.getMyId().toString();
+    public boolean isPaused() {
+        return n.paused;
+    }
+
+    public void unpause() {
+        n.unpause();
     }
 
     public MutableGraph getSubgraph() {
         MutableGraph cluster = mutGraph(n.getMyId() + " cluster").setCluster(true);
+        if (n.poisoned) {
+            cluster.nodeAttrs().add(Color.GREEN);
+//            cluster.nodeAttrs().add(Style.FILLED);
+        }
 
         MutableNode image = image();
         cluster.add(image);
@@ -49,11 +57,6 @@ public class GraphNode {
         cluster.add(state);
 
         return cluster;
-    }
-
-    public MutableNode getStateNode() {
-        MutableNode state = stateNode();
-        return state;
     }
 
     private String id() {
@@ -82,7 +85,7 @@ public class GraphNode {
 
         String messageString = "queue is empty";
         if (currentMessage != null) {
-            messageString = currentMessage.printMessage(n.getMyId());
+            messageString = currentMessage.messageSnapshot();
         }
         String messageRecord = turn(
                 rec("cm", "Message: " + messageString)
