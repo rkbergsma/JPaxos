@@ -4,6 +4,7 @@
   "proposalIntervalInS": 0,
   "messageDelayInMs": 0,
   "snapshotEnable": true,
+  "nodeDownTimeInMs": 5000,
   "proposals": [
     {"node":0, "value":44}
   ]

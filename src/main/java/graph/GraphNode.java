@@ -40,14 +40,20 @@ public class GraphNode {
     }
 
     public void unpause() {
-        n.unpause();
+        if (!n.poisoned) {
+            n.unpause();
+        }
     }
 
     public MutableGraph getSubgraph() {
         MutableGraph cluster = mutGraph(n.getMyId() + " cluster").setCluster(true);
+        cluster.graphAttrs().add(Style.ROUNDED);
         if (n.poisoned) {
-            cluster.nodeAttrs().add(Color.GREEN);
-//            cluster.nodeAttrs().add(Style.FILLED);
+            cluster.graphAttrs().add(Color.rgb(80, 250, 123).background());
+            cluster.nodeAttrs().add(Color.rgb(98, 114, 164));
+        } else {
+            cluster.graphAttrs().add(Color.rgb(40, 42, 54).background());
+            cluster.nodeAttrs().add(Color.rgb(248, 248, 242));
         }
 
         MutableNode image = image();
@@ -177,6 +183,13 @@ public class GraphNode {
 
     private MutableNode stateNode() {
         MutableNode stateNode = mutNode(n.getMyId() + " state");
+        stateNode.attrs().add(Style.ROUNDED);
+        if (n.poisoned) {
+            stateNode.attrs().add(Color.rgb(98, 114, 164).font());
+        } else {
+            stateNode.attrs().add(Color.rgb(248, 248, 242).font());
+        }
+
         stateNode.add(Records.of(
                 turn(id()),
                 turn(currentMessage()),
