@@ -128,7 +128,7 @@ public class Snapshot {
         return true;
     }
 
-    private void unpauseAll() {
+    public void unpauseAll() {
         for (GraphNode n : nodes) {
             n.unpause();
         }

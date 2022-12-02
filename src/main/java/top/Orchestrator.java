@@ -79,7 +79,6 @@ public class Orchestrator {
 
         Option snapshotEnable = Option.builder("s").longOpt("snapshotEnable")
                 .argName("snapshotEnable")
-                .hasArg()
                 .required(false)
                 .desc("Enable taking snapshots and drawing with graphviz")
                 .build();
@@ -192,12 +191,14 @@ public class Orchestrator {
             if (tokens[0].equals("die")) {
                 break;
             } else if (tokens[0].equals("poison")) {
+                snapshot.unpauseAll();
                 Integer pid = Integer.parseInt(tokens[1]);
                 Integer downTime = Integer.parseInt(tokens[2]);
                 for (Queue<Message> node : nodes.values()) {
                     node.offer(new PoisonPillMessage(69, pid, downTime));
                 }
             } else if (tokens[0].equals("propose")) {
+                snapshot.unpauseAll();
                 Integer pid = Integer.parseInt(tokens[1]);
                 Integer proposalValue = Integer.parseInt(tokens[2]);
                 if (nodes.containsKey(pid)){
